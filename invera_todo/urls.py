@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from todo_app.views import UserListView, AllTaskListView, UserTaskListView, RegisterView
+from todo_app.views import UserListView, AllTaskListView, UserTaskListView, RegisterView, CreateAuthToken
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -24,4 +24,5 @@ urlpatterns = [
     path('tasks/', AllTaskListView.as_view(), name='all-tasks'),
     path('tasks/user/', UserTaskListView.as_view(), name='user-tasks'),
     path('register/', RegisterView.as_view(), name='register'),
+    path('auth-token-create/', CreateAuthToken.as_view(), name='auth-token-create'),
 ]
