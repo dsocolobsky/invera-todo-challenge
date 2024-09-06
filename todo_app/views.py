@@ -34,6 +34,12 @@ class UserTaskListView(generics.ListAPIView):
         return super().list(request, *args, **kwargs)
 
 
+class CreateTaskView(generics.CreateAPIView):
+    serializer_class = TaskSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [BearerTokenAuthentication]
+
+
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
