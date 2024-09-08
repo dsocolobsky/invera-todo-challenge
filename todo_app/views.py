@@ -15,6 +15,16 @@ class UserListView(generics.ListAPIView):
 class AllTaskListView(generics.ListAPIView):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [BearerTokenAuthentication]
+
+    def list(self, request, *args, **kwargs):
+        if not request.user or request.user.username != "admin":
+            return Response(
+                {"error": "Authentication header is missing"},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+        return super().list(request, *args, **kwargs)
 
 
 class TaskViewSet(viewsets.ModelViewSet):
@@ -30,7 +40,6 @@ class TaskViewSet(viewsets.ModelViewSet):
             return Task.objects.none()
 
     def list(self, request, *args, **kwargs):
-        print("Headers:", request.headers)
         auth_header = request.headers.get("Authorization")
         if not auth_header:
             return Response(
