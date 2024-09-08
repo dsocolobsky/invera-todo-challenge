@@ -21,7 +21,7 @@ class TaskViewSet(viewsets.ModelViewSet):
     serializer_class = TaskSerializer
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [BearerTokenAuthentication]
-    http_method_names = ["get", "post"]
+    http_method_names = ["get", "post", "patch"]
 
     def get_queryset(self):
         if self.request.user.is_authenticated:

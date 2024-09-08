@@ -16,7 +16,8 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 from todo_app.views import (
     UserListView,
     AllTaskListView,
@@ -25,16 +26,15 @@ from todo_app.views import (
     TaskViewSet,
 )
 
+router = DefaultRouter()
+router.register(r"tasks", TaskViewSet, basename="tasks")
+
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("users/", UserListView.as_view(), name="user-list"),
-    path(
-        "tasks/",
-        TaskViewSet.as_view(actions={"get": "list", "post": "create"}),
-        name="tasks",
-    ),
     path("all-tasks/", AllTaskListView.as_view(), name="all-tasks"),
     path("register/", RegisterView.as_view(), name="register"),
     path("auth-token-create/", CreateAuthToken.as_view(), name="auth-token-create"),
+    path("", include(router.urls)),
 ]

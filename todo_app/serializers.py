@@ -22,6 +22,7 @@ class TaskSerializer(serializers.ModelSerializer):
             "updated_at",
             "user",
         ]
+        read_only_fields = ["id", "created_at", "user"]
 
     # Show User id for the Task in GET requests
     def to_representation(self, instance):
