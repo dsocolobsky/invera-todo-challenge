@@ -1,4 +1,4 @@
-from rest_framework import generics, permissions, status
+from rest_framework import generics, permissions, status, viewsets
 from rest_framework.response import Response
 from .models import User, Task
 from .serializers import UserSerializer, TaskSerializer
@@ -14,10 +14,11 @@ class AllTaskListView(generics.ListAPIView):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
 
-class UserTaskListView(generics.ListAPIView):
+class TaskViewSet(viewsets.ModelViewSet):
     serializer_class = TaskSerializer
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [BearerTokenAuthentication]
+    http_method_names = ['get', 'post']
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
@@ -33,11 +34,8 @@ class UserTaskListView(generics.ListAPIView):
         
         return super().list(request, *args, **kwargs)
 
-
-class CreateTaskView(generics.CreateAPIView):
-    serializer_class = TaskSerializer
-    permission_classes = [permissions.IsAuthenticated]
-    authentication_classes = [BearerTokenAuthentication]
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
 
 
 class RegisterView(generics.CreateAPIView):
