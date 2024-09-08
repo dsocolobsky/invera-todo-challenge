@@ -1,10 +1,23 @@
 from rest_framework import generics, permissions, status, viewsets
 from rest_framework.response import Response
+from django_filters import rest_framework as filters
+
 from .models import User, Task
 from .serializers import UserSerializer, TaskSerializer
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from .authentication import BearerTokenAuthentication
+
+
+class TaskFilter(filters.FilterSet):
+    title = filters.CharFilter(lookup_expr="icontains")
+    description = filters.CharFilter(lookup_expr="icontains")
+    completed = filters.BooleanFilter()
+    created_at = filters.DateFromToRangeFilter()
+
+    class Meta:
+        model = Task
+        fields = ["title", "description", "completed", "created_at"]
 
 
 class UserListView(generics.ListAPIView):
@@ -31,13 +44,12 @@ class TaskViewSet(viewsets.ModelViewSet):
     serializer_class = TaskSerializer
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [BearerTokenAuthentication]
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = TaskFilter
     http_method_names = ["get", "post", "patch"]
 
     def get_queryset(self):
-        if self.request.user.is_authenticated:
-            return Task.objects.filter(user=self.request.user)
-        else:
-            return Task.objects.none()
+        return Task.objects.filter(user=self.request.user)
 
     def list(self, request, *args, **kwargs):
         auth_header = request.headers.get("Authorization")
