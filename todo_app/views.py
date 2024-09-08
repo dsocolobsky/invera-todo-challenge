@@ -14,10 +14,19 @@ class TaskFilter(filters.FilterSet):
     description = filters.CharFilter(lookup_expr="icontains")
     completed = filters.BooleanFilter()
     created_at = filters.DateFromToRangeFilter()
+    userid = filters.NumberFilter(field_name="user__id")
+    username = filters.CharFilter(field_name="user__username")
 
     class Meta:
         model = Task
-        fields = ["title", "description", "completed", "created_at"]
+        fields = [
+            "title",
+            "description",
+            "completed",
+            "created_at",
+            "user",
+            "username",
+        ]
 
 
 class UserListView(generics.ListAPIView):
@@ -30,6 +39,8 @@ class AllTaskListView(generics.ListAPIView):
     serializer_class = TaskSerializer
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [BearerTokenAuthentication]
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = TaskFilter
 
     def list(self, request, *args, **kwargs):
         if not request.user or request.user.username != "admin":
