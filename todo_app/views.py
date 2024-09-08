@@ -57,7 +57,7 @@ class TaskViewSet(viewsets.ModelViewSet):
     authentication_classes = [BearerTokenAuthentication]
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_class = TaskFilter
-    http_method_names = ["get", "post", "patch"]
+    http_method_names = ["get", "post", "patch", "delete"]
 
     def get_queryset(self):
         return Task.objects.filter(user=self.request.user)
