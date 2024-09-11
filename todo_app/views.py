@@ -1,6 +1,7 @@
 from rest_framework import generics, permissions, status, viewsets
 from rest_framework.response import Response
 from django_filters import rest_framework as filters
+from django.contrib.auth import get_user_model
 
 from .models import User, Task
 from .serializers import UserSerializer, TaskSerializer
@@ -8,10 +9,12 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from .authentication import BearerTokenAuthentication
 
+User = get_user_model()
+
 
 class TaskFilter(filters.FilterSet):
     title = filters.CharFilter(lookup_expr="icontains")
-    description = filters.CharFilter(lookup_expr="icontains")
+    details = filters.CharFilter(lookup_expr="icontains")
     completed = filters.BooleanFilter()
     created_at = filters.DateFromToRangeFilter()
     userid = filters.NumberFilter(field_name="user__id")
@@ -21,7 +24,7 @@ class TaskFilter(filters.FilterSet):
         model = Task
         fields = [
             "title",
-            "description",
+            "details",
             "completed",
             "created_at",
             "user",
@@ -32,6 +35,8 @@ class TaskFilter(filters.FilterSet):
 class UserListView(generics.ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = [permissions.IsAdminUser]
+    authentication_classes = [BearerTokenAuthentication]
 
 
 class AllTaskListView(generics.ListAPIView):
